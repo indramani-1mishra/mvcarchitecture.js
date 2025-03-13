@@ -1,4 +1,8 @@
- const ManualValidetor =(req,res,next)=>
+import { StatusCodes } from "http-status-codes";
+
+import mongoose from "mongoose";
+
+export const ManualValidetor =(req,res,next)=>
 {
     if(!req.body.tweet)
     {
@@ -15,4 +19,16 @@
 
     next();
 }
-export default ManualValidetor;
+ 
+export  const gettweetbyIdmanualValidetor =(req,res,next)=>
+{
+    var isValid = mongoose.Types.ObjectId.isValid(req.params.id);
+    if(!isValid)
+    {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            message:"not a valid id",
+            success:false
+        })
+    }
+    next();
+}

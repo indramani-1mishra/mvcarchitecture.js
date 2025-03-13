@@ -1,11 +1,11 @@
 import Tweet from "../schema/tweet.js";
 
-export const createTweet1 = async ({body})=>
+export const createTweet1 = async ({body,image})=>
 {
    try
    {
-     const tweet = await Tweet.create({body});
-     return tweet;
+     const tweet = await Tweet.create({body,image});
+     return tweet.save;
    }
    catch(erorr)
    { 
@@ -38,3 +38,13 @@ export const gettweetsbyID=(tweetID)=>
         throw erorr;
     }
 }
+
+
+export const delettweets = async (tweetsID) => {
+  try {
+    const tweet = await Tweet.findByIdAndDelete(tweetsID);
+    return tweet;
+  } catch (error) {
+    throw error;
+  }
+};
