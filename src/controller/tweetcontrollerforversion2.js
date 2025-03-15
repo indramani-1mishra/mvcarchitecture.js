@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import { createTweet,  delettweetser, gettweetsbyidser, gettweetser } from "../service/tweetservice.js";
+import { createTweet,  delettweetser, gettweetsbyidser, gettweetser, updatedtweetser } from "../service/tweetservice.js";
 
     export const createPost = async(req, res, next) => {
         console.log(req.file);
@@ -29,7 +29,7 @@ import { createTweet,  delettweetser, gettweetsbyidser, gettweetser } from "../s
                 message:"tweet contains blocks word",
                 error: error
             })
-            next(); // 🔴 Yeh error ko Express ke global error handler tak bhej dega
+            next();
         }
     };
     
@@ -87,10 +87,10 @@ import { createTweet,  delettweetser, gettweetsbyidser, gettweetser } from "../s
 
     }
  
-    
-    export const delettweetsc = async (req, res) => {
+        export const delettweetsc = async (req, res) => {
         try {
-            const deletedTweet = await delettweetser(req.params.id); // Correct function name
+            const deletedTweet = await delettweetser(req.params.id);
+             
             if (!deletedTweet) {
                 return res.status(StatusCodes.NOT_FOUND).json({
                     message: "Tweet not found",
@@ -108,6 +108,46 @@ import { createTweet,  delettweetser, gettweetsbyidser, gettweetser } from "../s
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ // 500 for server errors
                 message: "Error in deleting tweet",
                 error: error.message, // Include error message for debugging
+                success: false
+            });
+        }
+    };
+    
+    export const updatedTweetc = async (req, res) => {
+        try {
+            console.log("Received Body:", req.body); // Debugging
+    
+            // ✅ Extract the correct value
+            const tweetBody = req.body.body; 
+    
+            if (!tweetBody || typeof tweetBody !== "string") {
+                return res.status(400).json({
+                    message: "Invalid body format. Expected a string.",
+                    success: false
+                });
+            }
+    
+            const updatedTweet = await updatedtweetser(req.params.id, tweetBody);
+            console.log("Updated Tweet:", updatedTweet); // Debugging
+    
+            if (!updatedTweet) {
+                return res.status(404).json({
+                    message: "Tweet not found",
+                    success: false
+                });
+            }
+    
+            return res.status(200).json({
+                message: "Tweet updated successfully",
+                data: updatedTweet,
+                success: true
+            });
+        } 
+        catch (error) {
+            console.error("Error in updatedTweetc:", error);
+            return res.status(500).json({
+                message: "Error in updating tweet",
+                error: error.message, 
                 success: false
             });
         }
